@@ -26,23 +26,26 @@ class TaskTable extends Table {
         $this->primaryKey('id');
     }
 
-    public function append($shell,$action,array $params=[],array $options=[]){
+    public function append($shell,$action,array $params=[],array $data=[]){
         if(!empty($options['alias'])){
             if($this->locked($options['alias'])){
                 return(false);
             }
         }
 
-        $task=$this->newEntity([
+        $data=array_merge([
+            'timeout'=>null,
+            'step'=>null,
+            'alias'=>null,
+            'progress'=>0,
+            'message'=>null
+        ],$data,[
             'shell'=>$shell,
             'action'=>$action,
             'params'=>json_encode($params),
-            'timeout'=>Hash::get($options,'timeout'),
-            'step'=>Hash::get($options,'step'),
-            'alias'=>Hash::get($options,'alias'),
-            'progress'=>Hash::get($options,'progress',0),
-            'message'=>Hash::get($options,'message')
         ]);
+
+        $task=$this->newEntity($data);
 
         if(!$this->save($task)){
             return(false);

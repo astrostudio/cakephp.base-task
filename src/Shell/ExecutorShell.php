@@ -42,6 +42,11 @@ class ExecutorShell extends Shell
                             'default'=>5,
                             'help'=>'Step'
                         ],
+                        'data'=>[
+                            'short'=>'d',
+                            'default'=>'{}',
+                            'help'=>'Additional data (JSON)'
+                        ]
                     ]
                 ]
             ],
@@ -106,7 +111,12 @@ class ExecutorShell extends Shell
             }
         }
 
-        $task=$this->Task->append($shell,$action,$params);
+        $data=$this->param('data');
+        $data=json_decode($data,true);
+        $data['timeout']=$this->param('timeout');
+        $data['step']=$this->param('step');
+
+        $task=$this->Task->append($shell,$action,$params,$data);
 
         if(!$task){
             return(-1);
